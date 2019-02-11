@@ -1,0 +1,73 @@
+#include<graphics.h>
+#include<conio.h>
+#include<dos.h>
+union REGS in,out;
+
+int callmouse()
+{
+in.x.ax=1;
+int86(51,&in,&out);
+return 1;
+}
+int getStatus(int &x,int &y,int &clk)
+{
+	in.x.ax=3;
+	int86(51,&in,&out);
+	clk=out.x.bx;
+	x=out.x.cx;
+	y=out.x.dx;
+	return clk;
+}
+/*int search(int coords[][2], int &x,int &y,int i)
+{
+	int j=0;
+	for(j;j<=i;j++)
+	{
+		//outtextxy(0,j,"Check");
+		if( (coords[j][0]>(x-10)&&coords[j][0]<(x+10)) &&
+		 (coords[j][1]>(y-10)&&coords[j][1]<(y+10)))
+		 {
+			return j;
+		 }
+	}
+	return -1;
+}*/
+int coords[50][2];
+void addCoord(int x,int y,int index){
+	coords[index][0]=x;
+	coords[index][1]=y;
+}
+void main()
+{
+int gd=DETECT,gm;
+initgraph(&gd,&gm,"C:\\TURBOC3\\BGI\\");
+int x=0,y=0,clk;
+int index=0;
+int click;
+callmouse();
+int line_flg=0;
+int x1=0,x2=0,y1=0,y2=0;
+while(!kbhit())
+{
+	click=getStatus(x,y,clk);
+	//delay(250);
+	if(clk==1)
+	{
+		circle(x,y,20);
+		outtextxy(x,y+20,"Hello");
+		//addCoord(x,y,index++);
+	}else if(clk==2)
+	{
+		if(line_flg==0){
+			x1=x;y1=y;
+			line_flg=!line_flg;
+		}
+		else if(line_flg==1){
+			x2=x;y2=y;
+			line(x1,y1,x2,y2);
+			line_flg=!line_flg;
+		}
+		delay(250);
+	}
+}
+}
